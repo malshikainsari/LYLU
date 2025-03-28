@@ -13,7 +13,7 @@ const ListingDetails = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch("http://lylu-production.up.railway.app/api/auth/user", {
+        const response = await fetch("https://lylu-production.up.railway.app/api/auth/user", {
           credentials: "include",
         });
         const data = await response.json();
@@ -46,7 +46,7 @@ const ListingDetails = () => {
   useEffect(() => {
     const fetchListing = async () => {
       try {
-        const response = await fetch(`http://lylu-production.up.railway.app/api/listings/${id}`);
+        const response = await fetch(`https://lylu-production.up.railway.app/api/listings/${id}`);
         if (!response.ok) throw new Error("Failed to fetch listing");
         const data = await response.json();
         setListing(data);

@@ -16,7 +16,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch("http://lylu-production.up.railway.app/api/auth/user", { credentials: "include" });
+        const response = await fetch("https://lylu-production.up.railway.app/api/auth/user", { credentials: "include" });
         const data = await response.json();
         console.log("Fetched user data:", data.user); // Debugging line
         if (data.user) {
@@ -58,7 +58,7 @@ const ProfilePage = () => {
       return;
     }
     try {
-      const response = await fetch(`http://lylu-production.up.railway.app/api/users/${user._id}`, {
+      const response = await fetch(`https://lylu-production.up.railway.app/api/users/${user._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(profileData),

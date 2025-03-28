@@ -26,7 +26,7 @@ const ContactPage = () => {
     setStatus("Sending...");
 
     try {
-      const response = await fetch("http://lylu-production.up.railway.app/api/send-email", {
+      const response = await fetch("https://lylu-production.up.railway.app/api/send-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

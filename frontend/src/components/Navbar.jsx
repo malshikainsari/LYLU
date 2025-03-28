@@ -12,7 +12,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchUser = async () => { 
       try {
-        const response = await fetch("http://lylu-production.up.railway.app/api/auth/user", {
+        const response = await fetch("https://lylu-production.up.railway.app/api/auth/user", {
           credentials: "include",
         });
         const data = await response.json();
@@ -27,7 +27,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://lylu-production.up.railway.app/api/auth/logout", {
+      await fetch("https://lylu-production.up.railway.app/api/auth/logout", {
         method: "POST",
         credentials: "include",
       });
