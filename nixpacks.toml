@@ -1,0 +1,14 @@
+[phases.setup]
+cmds = [
+    "cd frontend && npm install",
+    "cd server && npm install"
+]
+
+[phases.build]
+cmds = [
+    "cd frontend && npm run build",
+    # Add any server build commands if needed
+]
+
+[start]
+cmd = "cd server && npm start"
