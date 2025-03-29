@@ -35,8 +35,9 @@ app.set('trust proxy', 1);
 // Enhanced CORS configuration
 const allowedOrigins = [
   "https://lylu-rho.vercel.app",
+  "https://lylu-rho.vercel.app/", // Include with and without trailing slash
   "https://lylu-production.up.railway.app",
-  "http://localhost:3000" // for development
+  "http://localhost:3000"
 ];
 
 app.use(cors({
@@ -44,7 +45,10 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.includes(origin)) {
+    if (allowedOrigins.some(allowedOrigin => 
+      origin === allowedOrigin || 
+      origin.startsWith(allowedOrigin.replace(/\/$/, ''))
+    )) {
       callback(null, true);
     } else {
       console.log('CORS blocked for origin:', origin);
@@ -53,8 +57,9 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['set-cookie']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'X-Requested-With', 'Accept'],
+  exposedHeaders: ['set-cookie'],
+  maxAge: 86400
 }));
 
 // Body parsing middleware
@@ -77,11 +82,12 @@ app.use(
     saveUninitialized: false,
     proxy: true, // Required for Railway
     cookie: {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? 'none' : 'lax',
+      secure: true, // Always true in production
+      sameSite: 'none', // Required for cross-site cookies
       domain: process.env.NODE_ENV === "production" ? '.lylu-rho.vercel.app' : undefined,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
-      httpOnly: true
+      httpOnly: true,
+      path: '/'
     }
   })
 );
@@ -96,8 +102,10 @@ app.use(userRoutes);
 app.use(listingRoutes);
 app.use("/api/send-email", sendMailRouter);
 
-// Health check endpoint
+// Health check endpoint with CORS headers
 app.get("/health", (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || allowedOrigins[0]);
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.status(200).json({ 
     status: "OK",
     environment: process.env.NODE_ENV || "development",
@@ -108,11 +116,22 @@ app.get("/health", (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ error: 'Something broke!' });
+  
+  // Handle CORS errors specifically
+  if (err.message === 'Not allowed by CORS') {
+    return res.status(403).json({ error: 'CORS policy violation' });
+  }
+  
+  res.status(500).json({ 
+    error: 'Something broke!',
+    message: err.message,
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+  });
 });
 
 // Server startup
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV || "development"} mode on port ${PORT}`);
+  console.log(`Allowed CORS origins: ${allowedOrigins.join(', ')}`);
 });
