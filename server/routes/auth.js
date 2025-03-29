@@ -12,7 +12,7 @@ router.get(
   "/google/callback",
   passport.authenticate("google", {
     failureRedirect: "https://lylu-rho.vercel.app/login",
-    successRedirect: "https://lylu-rho.vercel.app",
+    successRedirect: "https://lylu-rho.vercel.app/dashboard",
   })
 );
 
