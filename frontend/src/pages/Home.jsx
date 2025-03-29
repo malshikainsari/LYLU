@@ -34,7 +34,7 @@ const SignupPage = () => {
 
   useEffect(() => {
     if (!loading && user) {
-      navigate("https://lylu-rho.vercel.app/dashboard");
+      navigate("/dashboard");
     }
   }, [user, navigate, loading]); 
 
